@@ -1,0 +1,23 @@
+{
+	"ImportPath": "github.com/eliquious/random",
+	"GoVersion": "go1.5",
+	"Deps": [
+		{
+			"ImportPath": "github.com/Pallinder/go-randomdata",
+			"Rev": "4134a721d6473f81816b1799866bf3e553a9b8d4"
+		},
+		{
+			"ImportPath": "github.com/alecthomas/kingpin",
+			"Comment": "v2.1.11-13-gb3e2dde",
+			"Rev": "b3e2dde5034607a4446a4d5025baf43378e03203"
+		},
+		{
+			"ImportPath": "github.com/alecthomas/template",
+			"Rev": "14fd436dd20c3cc65242a9f396b61bfc8a3926fc"
+		},
+		{
+			"ImportPath": "github.com/alecthomas/units",
+			"Rev": "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
+		}
+	]
+}

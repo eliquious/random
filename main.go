@@ -6,7 +6,7 @@ import (
     "encoding/hex"
     "fmt"
     "github.com/Pallinder/go-randomdata"
-    "gopkg.in/alecthomas/kingpin.v2"
+    "github.com/alecthomas/kingpin"
 )
 
 var (
