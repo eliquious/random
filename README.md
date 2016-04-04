@@ -94,4 +94,11 @@ Commands:
 
   base64 [<LENGTH>]
     Generates a random base64.
+
+  string [<LENGTH>]
+    Generates a random string of digits, upper and lower case characters.
+
+  uuid
+    Generates a random UUID4.
+
 ```
