@@ -7,6 +7,9 @@ import (
     "fmt"
     "github.com/Pallinder/go-randomdata"
     "github.com/alecthomas/kingpin"
+    "io"
+    mrand "math/rand"
+    "time"
 )
 
 var (
@@ -43,6 +46,9 @@ var (
     hexLengthArg           = hexCommand.Arg("LENGTH", "Determines the length of the random data in bytes").Default("16").Int()
     base64Command          = kingpin.Command("base64", "Generates a random base64.")
     base64LengthArg        = base64Command.Arg("LENGTH", "Determines the length of the random data in bytes").Default("16").Int()
+    stringCommand          = kingpin.Command("string", "Generates a random string of digits, upper and lower case characters.")
+    stringLengthArg        = stringCommand.Arg("LENGTH", "Determines the length of the random data in bytes").Default("16").Int()
+    uuidCommand            = kingpin.Command("uuid", "Generates a random UUID4.")
 )
 
 func main() {
@@ -151,6 +157,55 @@ func main() {
         }
         rand.Read(buf)
         fmt.Println(base64.StdEncoding.EncodeToString(buf))
+    case "string":
+        var buf []byte
+        if *stringLengthArg == 0 || *stringLengthArg > 16384 {
+            buf = make([]byte, 16)
+        } else {
+            buf = make([]byte, *stringLengthArg)
+        }
+        r := RandStringReader{mrand.NewSource(time.Now().UnixNano())}
+        r.Read(buf)
+        fmt.Println(string(buf))
+    case "uuid":
+        fmt.Println(UUID4())
+    }
+}
+
+type RandStringReader struct {
+    src mrand.Source
+}
+
+func (r *RandStringReader) Read(p []byte) (int, error) {
+    size := len(p)
+    start := int64(r.src.Int63())
+    for i := size - 1; i > -1; i-- {
+        p[i] = StdChars[rune(start)&61]
+        if i&7 == 0 {
+            start = int64(r.src.Int63())
+        }
+        start >>= 7
+    }
+    return len(p), nil
+}
+
+var StdChars = []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+
+// Zeros represents an empty or null UUID.
+const Zeros = "00000000-0000-0000-0000-000000000000"
+
+// UUID4 generates a random UUID according to RFC 4122
+func UUID4() string {
+    uuid := make([]byte, 16)
+    n, err := io.ReadFull(rand.Reader, uuid)
+    if n != len(uuid) || err != nil {
+        return Zeros
     }
 
+    // variant bits; see section 4.1.1
+    uuid[8] = uuid[8]&^0xc0 | 0x80
+
+    // version 4 (pseudo-random); see section 4.1.3
+    uuid[6] = uuid[6]&^0xf0 | 0x40
+    return fmt.Sprintf("%x-%x-%x-%x-%x", uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:10], uuid[10:])
 }
